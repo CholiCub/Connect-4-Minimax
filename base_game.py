@@ -1,6 +1,7 @@
 import numpy as np
 import pygame
 import sys
+import random
 
 BLUE = (0, 116, 186)
 PINK = (240, 90, 136)
@@ -9,6 +10,9 @@ BLACK =(0, 0, 0)
 
 ROW_COUNT = 6
 COL_COUNT = 7
+
+PLAYER = 0
+AI = 1
 
 def create_board():
     board = np.zeros((ROW_COUNT, COL_COUNT))
@@ -96,7 +100,7 @@ while not game_over:
         pygame.display.update()
         if event.type == pygame.MOUSEBUTTONDOWN:
             pygame.draw.rect(window, BLACK,(0, 0, width, int(SQUARESIZE)))
-            if turn == 0:
+            if turn == PLAYER:
                 posX = event.pos[0]
                 col = int(posX / SQUARESIZE) 
                 if is_valid_location(board, col):
@@ -106,16 +110,20 @@ while not game_over:
                         label = myfont.render("Player 1 wins!", 1, BLUE)
                         window.blit(label, (40, 10))
                         game_over = True
-            else:
-                posX = event.pos[0]
-                col = int(posX / SQUARESIZE) 
-                if is_valid_location(board, col):
-                    row=get_next_open_row(board, col)
-                    drop_piece(board, row, col, 2)
-                    if winning_move(board, 2):
-                        label = myfont.render("Player 2 wins!", 1, PINK)
-                        window.blit(label, (40, 10))
-                        game_over = True
+
+                    turn += 1
+                    turn = turn % 2 
+    
+    if turn == AI and not game_over:
+        col = random.randint(0, COL_COUNT - 1)
+
+        if is_valid_location(board, col):
+            row=get_next_open_row(board, col)
+            drop_piece(board, row, col, 2)
+            if winning_move(board, 2):
+                label = myfont.render("Player 2 wins!", 1, PINK)
+                window.blit(label, (40, 10))
+                game_over = True
 
             print_board(board)
             draw_board(board)
@@ -123,7 +131,7 @@ while not game_over:
             turn += 1
             turn = turn % 2 
 
-            if game_over:
-                pygame.time.wait(3000)
+    if game_over:
+        pygame.time.wait(3000)
 
 pygame.quit()
