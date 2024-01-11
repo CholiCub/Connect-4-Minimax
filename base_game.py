@@ -86,6 +86,8 @@ pygame.display.update()
 pygame.display.set_caption("Connect 4 Minimax")
 myfont = pygame.font.SysFont("monospace",75)
 
+turn = random.randint(PLAYER, AI)
+
 while not game_over:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -95,8 +97,6 @@ while not game_over:
             posX = event.pos[0]
             if turn == 0:
                 pygame.draw.circle(window, BLUE, (posX, int(SQUARESIZE / 2)),RADIUS)
-            else:
-                pygame.draw.circle(window, PINK, (posX, int(SQUARESIZE / 2)),RADIUS)
         pygame.display.update()
         if event.type == pygame.MOUSEBUTTONDOWN:
             pygame.draw.rect(window, BLACK,(0, 0, width, int(SQUARESIZE)))
@@ -113,12 +113,16 @@ while not game_over:
 
                     turn += 1
                     turn = turn % 2 
+                    
+                    print_board(board)
+                    draw_board(board)
     
     if turn == AI and not game_over:
         col = random.randint(0, COL_COUNT - 1)
 
         if is_valid_location(board, col):
             row=get_next_open_row(board, col)
+            pygame.time.wait(500)
             drop_piece(board, row, col, 2)
             if winning_move(board, 2):
                 label = myfont.render("Player 2 wins!", 1, PINK)
